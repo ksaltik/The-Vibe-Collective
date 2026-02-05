@@ -4,3 +4,4 @@ pydantic
 uvicorn
 pgvector
 python-dotenv
+openai

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from .database import Base
-from pgvector.sqlalchemy import Vector
+from .vector_utils import Vector
 
 class User(Base):
     __tablename__ = "users"
@@ -35,8 +35,13 @@ class Rule(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     content = Column(Text) # The active instruction
-    explanation = Column(Text, nullable=True) # The "Why"
-    rule_type = Column(String, default="Constraint") # Constraint, Performance, Style, etc.
+    explanation = Column(Text, nullable=True) # The "Why" or "Context"
+
+    # rule_type maps to "Vibe" (Instruction) or "Anti-Pattern" (Constraint)
+    rule_type = Column(String, default="Instruction")
+
+    tags = Column(String, nullable=True) # Comma-separated tags for Vibes
+
     pack_id = Column(Integer, ForeignKey("vibe_packs.id"))
     votes = Column(Integer, default=0)
 
@@ -51,7 +56,7 @@ class Term(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     definition_raw = Column(Text, nullable=True) # AI's definition
-    definition_personal = Column(Text, nullable=True) # User's note
+    definition_personal = Column(Text, nullable=True) # User's note/insight
     pack_id = Column(Integer, ForeignKey("vibe_packs.id"))
 
     # Vector embedding for semantic search
